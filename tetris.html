@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tetris - Ucapan Ulang Tahun</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      background-color: #0b0b0b;
+      font-family: 'Press Start 2P', cursive;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+      color: #f97316;
+      user-select: none;
+      flex-direction: column;
+    }
+
+    .container {
+      background-color: #111111;
+      border: 4px solid #f97316;
+      border-radius: 10px;
+      padding: 20px;
+      box-sizing: border-box;
+      width: 100%; /* Menggunakan 100% untuk responsif */
+      max-width: 320px; /* Maksimal lebar untuk desktop */
+      text-align: center;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+      position: relative;
+    }
+
+    h1 {
+      margin: 0;
+      padding: 10px 15px;
+      font-size: 1.5rem; /* Ukuran font lebih besar untuk perangkat besar */
+      letter-spacing: 2px;
+      font-weight: bold;
+      width: 100%;
+      user-select: none;
+    }
+
+    canvas {
+      background-color: #222;
+      border: 3px solid #f97316;
+      border-radius: 6px;
+      image-rendering: pixelated;
+      cursor: pointer;
+      width: 100%; /* Menggunakan 100% untuk responsif */
+      max-width: 240px; /* Maksimal lebar untuk canvas */
+      height: auto; /* Tinggi otomatis untuk menjaga rasio */
+    }
+
+    button.back-btn {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 0.7rem;
+      padding: 12px 25px;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-weight: bold;
+      color: white;
+      background-color: #2e7d32;
+      border: none;
+      user-select: none;
+      transition: filter 0.3s ease, transform 0.15s ease;
+      border-radius: 6px;
+    }
+    button.back-btn:hover {
+      filter: brightness(0.85);
+    }
+    button.back-btn:active {
+      transform: scale(1.1);
+    }
+
+    /* Modal box */
+    #game-over-modal {
+      position: fixed;
+      top: 0; left: 0; right:0; bottom:0;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+    #game-over-modal .modal-content {
+      background-color: #111111;
+      border: 4px solid #f97316;
+      border-radius: 10px;
+      padding: 30px 40px;
+      text-align: center;
+      user-select: none;
+      box-shadow: 0 0 10px #f97316;
+    }
+
+    #game-over-main-text {
+      color: #f97316; /* oranye */
+      font-weight: bold;
+      font-size: 1.5rem; /* Ukuran font lebih besar untuk perangkat besar */
+      font-family: 'Press Start 2P', cursive;
+      margin-bottom: 15px;
+    }
+
+    #game-over-sub-text {
+      color: white;
+      font-size: 1rem;
+      font-family: Arial, sans-serif;
+      font-weight: normal;
+      margin-bottom: 25px;
+      white-space: normal;
+    }
+
+    #game-over-modal button {
+      background-color: #f97316;
+      border: none;
+      color: #111;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: 'Press Start 2P', cursive;
+      padding: 10px 25px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      transition: background-color 0.3s ease;
+    }
+    #game-over-modal button:hover {
+      background-color: #ffa751;
+    }
+
+    /* Tombol kontrol tetris */
+    .control-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .control-buttons button {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 0.8rem;
+      padding: 12px 18px;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-weight: bold;
+      color: white;
+      background-color: #f97316;
+      border: none;
+      border-radius: 6px;
+      user-select: none;
+      transition: filter 0.3s ease, transform 0.15s ease;
+      width: 60px;
+      height: 40px;
+    }
+    .control-buttons button:active {
+      transform: scale(1.1);
+    }
+
+    /* Media Queries untuk perangkat kecil */
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px; /* Mengurangi padding untuk perangkat kecil */
+      }
+
+      h1 {
+        font-size: 1.2rem; /* Ukuran font lebih kecil untuk perangkat kecil */
+      }
+
+      button.back-btn {
+        font-size: 0.6rem; /* Ukuran font tombol lebih kecil untuk perangkat kecil */
+        padding: 10px 20px; /* Mengurangi padding tombol untuk perangkat kecil */
+      }
+
+      canvas {
+        max-width: 100%; /* Menggunakan 100% untuk responsif */
+        height: auto; /* Tinggi otomatis untuk menjaga rasio */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>TETRIS</h1>
+    <canvas id="tetris" width="240" height="400"></canvas>
+
+    <div class="control-buttons">
+      <button id="btn-left" title="Geser Kiri">←</button>
+      <button id="btn-down" title="Turun Cepat">↓</button>
+      <button id="btn-up" title="Putar">↑</button>
+      <button id="btn-right" title="Geser Kanan">→</button>
+    </div>
+
+    <button class="back-btn" id="btn-back">Kembali ke Menu</button>
+  </div>
+
+  <!-- Modal Game Over -->
+  <div id="game-over-modal">
+    <div class="modal-content">
+      <div id="game-over-main-text">GAME OVER</div>
+      <div id="game-over-sub-text">Walaupun kamu kalah di game ini, kamu tetap menang di hatiku wkwkwk</div>
+      <button id="btn-restart">Main Lagi</button>
+    </div>
+  </div>
+
+  <audio id="click-sound" src="klik.wav" preload="auto"></audio>
+
+<script>
+  const canvas = document.getElementById('tetris');
+  const context = canvas.getContext('2d');
+  context.scale(20, 20);
+
+  const ROWS = 20;
+  const COLS = 12;
+  const arena = createMatrix(COLS, ROWS);
+
+  const tetrominoes = {
+    'T': [
+      [0,1,0],
+      [1,1,1],
+      [0,0,0]
+    ],
+    'O': [
+      [1,1],
+      [1,1]
+    ],
+    'L': [
+      [0,0,1],
+      [1,1,1],
+      [0,0,0]
+    ],
+    'J': [
+      [1,0,0],
+      [1,1,1],
+      [0,0,0]
+    ],
+    'I': [
+      [0,0,0,0],
+      [1,1,1,1],
+      [0,0,0,0],
+      [0,0,0,0]
+    ],
+    'S': [
+      [0,1,1],
+      [1,1,0],
+      [0,0,0]
+    ],
+    'Z': [
+      [1,1,0],
+      [0,1,1],
+      [0,0,0]
+    ]
+  };
+
+  const colors = {
+    0: '#000',
+    1: '#f97316', // orange
+  };
+
+  function createMatrix(w, h) {
+    const matrix = [];
+    while(h--) {
+      matrix.push(new Array(w).fill(0));
+    }
+    return matrix;
+  }
+
+  function drawMatrix(matrix, offset) {
+    matrix.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if(value !== 0) {
+          context.fillStyle = colors[value];
+          context.fillRect(x + offset.x, y + offset.y, 1, 1);
+          context.strokeStyle = '#000000';
+          context.lineWidth = 0.05;
+          context.strokeRect(x + offset.x, y + offset.y, 1, 1);
+        }
+      });
+    });
+  }
+
+  function merge(arena, player) {
+    player.matrix.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if(value !== 0) {
+          arena[y + player.pos.y][x + player.pos.x] = value;
+        }
+      });
+    });
+  }
+
+  function collide(arena, player) {
+    const [m, o] = [player.matrix, player.pos];
+    for(let y=0; y<m.length; y++) {
+      for(let x=0; x<m[y].length; x++) {
+        if(m[y][x] !== 0 &&
+          (arena[y + o.y] && arena[y + o.y][x + o.x]) !== 0) {
+            return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  function rotate(matrix, dir) {
+    for(let y=0; y<matrix.length; y++) {
+      for(let x=0; x<y; x++) {
+        [matrix[x][y], matrix[y][x]] = [matrix[y][x], matrix[x][y]];
+      }
+    }
+    if(dir > 0) {
+      matrix.forEach(row => row.reverse());
+    } else {
+      matrix.reverse();
+    }
+  }
+
+  function playerReset() {
+    const pieces = 'TJLOSZI';
+    player.matrix = createPiece(pieces[pieces.length * Math.random() | 0]);
+    player.pos.y = 0;
+    player.pos.x = (arena[0].length / 2 | 0) - (player.matrix[0].length / 2 | 0);
+    if(collide(arena, player)) {
+      gameOver();
+    }
+  }
+
+  function createPiece(type) {
+    const matrix = tetrominoes[type];
+    return matrix.map(row => row.map(cell => cell ? 1 : 0));
+  }
+
+  function playerDrop() {
+    player.pos.y++;
+    if(collide(arena, player)) {
+      player.pos.y--;
+      merge(arena, player);
+      sweep();
+      playerReset();
+      dropCounter = 0;
+    }
+  }
+
+  function sweep() {
+    outer: for(let y = arena.length - 1; y >= 0; y--) {
+      for(let x = 0; x < arena[y].length; x++) {
+        if(arena[y][x] === 0) {
+          continue outer;
+        }
+      }
+      const row = arena.splice(y, 1)[0].fill(0);
+      arena.unshift(row);
+      y++;
+    }
+  }
+
+  // Game over modal popup
+  const gameOverModal = document.getElementById('game-over-modal');
+  const btnRestart = document.getElementById('btn-restart');
+  let isGameOver = false;
+  let animationId;
+
+  function gameOver() {
+    cancelAnimationFrame(animationId);
+    isGameOver = true;
+    showGameOverModal();
+  }
+
+  function showGameOverModal() {
+    gameOverModal.style.display = 'flex';
+  }
+
+  btnRestart.addEventListener('click', () => {
+    resetGame();
+    gameOverModal.style.display = 'none';
+  });
+
+  // Drawing and update loop
+  let dropCounter = 0;
+  let dropInterval = 1000;
+  let lastTime = 0;
+
+  const player = {
+    pos: {x:0, y:0},
+    matrix: null,
+  };
+
+  function resetGame() {
+    for(let y=0; y<arena.length; y++) {
+      arena[y].fill(0);
+    }
+    playerReset();
+    isGameOver = false;
+    dropCounter = 0;
+    lastTime = 0;
+    update();
+  }
+
+  function update(time = 0) {
+    const deltaTime = time - lastTime;
+    lastTime = time;
+
+    dropCounter += deltaTime;
+    if(dropCounter > dropInterval && !isGameOver) {
+      playerDrop();
+      dropCounter = 0;
+    }
+
+    draw();
+    if(!isGameOver) {
+      animationId = requestAnimationFrame(update);
+    }
+  }
+
+  function draw() {
+    context.fillStyle = '#000';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    drawMatrix(arena, {x:0, y:0});
+    drawMatrix(player.matrix, player.pos);
+  }
+
+  // Controls
+  document.addEventListener('keydown', event => {
+    if(isGameOver) return;
+
+    if(event.key === 'ArrowLeft') {
+      player.pos.x--;
+      if(collide(arena, player)) {
+        player.pos.x++;
+      }
+    } else if(event.key === 'ArrowRight') {
+      player.pos.x++;
+      if(collide(arena, player)) {
+        player.pos.x--;
+      }
+    } else if(event.key === 'ArrowDown') {
+      playerDrop();
+      dropCounter = 0;
+    } else if(event.key === 'ArrowUp') {
+      rotate(player.matrix, 1);
+      if(collide(arena, player)) {
+        rotate(player.matrix, -1);
+      }
+    }
+  });
+
+  // On screen button controls
+  document.getElementById('btn-left').addEventListener('click', () => {
+    if(isGameOver) return;
+    player.pos.x--;
+    if(collide(arena, player)) player.pos.x++;
+    playClickSound();
+  });
+  document.getElementById('btn-right').addEventListener('click', () => {
+    if(isGameOver) return;
+    player.pos.x++;
+    if(collide(arena, player)) player.pos.x--;
+    playClickSound();
+  });
+  document.getElementById('btn-down').addEventListener('click', () => {
+    if(isGameOver) return;
+    playerDrop();
+    dropCounter = 0;
+    playClickSound();
+  });
+  document.getElementById('btn-up').addEventListener('click', () => {
+    if(isGameOver) return;
+    rotate(player.matrix, 1);
+    if(collide(arena, player)) rotate(player.matrix, -1);
+    playClickSound();
+  });
+
+  // Button kembali ke menu (buat demo, cuma reload halaman)
+  document.getElementById('btn-back').addEventListener('click', () => {
+    location.reload();
+  });
+
+  function playClickSound() {
+    const sound = document.getElementById('click-sound');
+    if(sound) {
+      sound.currentTime = 0;
+      sound.play();
+    }
+  }
+
+  resetGame();
+
+  document.getElementById('btn-back').addEventListener('click', () => {
+  window.location.href = 'menu.html';
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loading...</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      color: #2e7d32;
+      font-family: 'Press Start 2P', cursive;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      user-select: none;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      animation: shake 0.8s ease-in-out infinite;
+    }
+
+    @keyframes shake {
+      0%, 100% {
+        transform: translateX(0);
+      }
+      50% {
+        transform: translateX(2px);
+      }
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 id="loadingText">Nungguin ya</h1>
+
+  <script>
+    const textEl = document.getElementById('loadingText');
+    let dots = '';
+    let count = 0;
+
+    function animateDots() {
+      dots = '.'.repeat(count % 4); // 0 to 3 dots
+      textEl.textContent = 'Nungguin ya' + dots;
+      count++;
+      setTimeout(animateDots, 500);
+    }
+
+    animateDots();
+
+    // Arahkan ke menu.html setelah 3 detik
+    setTimeout(() => {
+      window.location.href = 'menu.html';
+    }, 5000);
+  </script>
+</body>
+</html>

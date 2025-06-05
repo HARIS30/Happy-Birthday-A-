@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Message - Ucapan Ulang Tahun</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background-color: #0b0b0b;
+      color: #ffffff;
+      font-family: 'Press Start 2P', cursive;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 20px;
+      user-select: none;
+    }
+
+    .container {
+      position: relative;
+      max-width: 800px;
+      width: 100%;
+      background-color: #111;
+      border: 4px solid #4caf50;
+      border-radius: 8px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .text-box {
+      width: 100%;
+      background-color: #222;
+      padding: 20px;
+      color: #ffffff;
+      font-size: 12px; /* Menyesuaikan ukuran font */
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+      user-select: none;
+      font-family: 'Press Start 2P', cursive;
+      line-height: 1.6;
+      text-align: left;
+      position: relative;
+    }
+
+    .text-box::after {
+      content: '|';
+      position: absolute;
+      top: 20px;
+      left: calc(20px + var(--text-length, 0ch));
+      color: #ffffff;
+      animation: blinkCaret 1s steps(1) infinite;
+      font-weight: bold;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    @keyframes blinkCaret {
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    button {
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 12px; /* Menyesuaikan ukuran font */
+      padding: 10px 20px;
+      cursor: pointer;
+      color: white;
+      background-color: #4caf50;
+      border: none;
+      transition: filter 0.3s ease, transform 0.15s ease;
+    }
+
+    button:hover {
+      filter: brightness(0.9);
+    }
+
+    button:active {
+      transform: scale(1.1);
+    }
+
+    /* Media Queries untuk perangkat kecil */
+    @media (max-width: 600px) {
+      .text-box {
+        font-size: 10px; /* Ukuran font lebih kecil untuk perangkat kecil */
+      }
+
+      button {
+        font-size: 10px; /* Ukuran font tombol lebih kecil untuk perangkat kecil */
+        padding: 8px 16px; /* Mengurangi padding tombol untuk perangkat kecil */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="text-box" id="message-text"></div>
+    <button id="btn-back">Kembali ke Menu</button>
+  </div>
+
+  <audio id="click-sound" src="klik.wav" preload="auto"></audio>
+  <audio id="background-music" src="blue.mp3" preload="auto" loop></audio>
+
+  <script>
+    const message = `This message is for you\n\nHappy Birthday! 🎉\n\nHi!! Selamat ulang tahun ya!! I always hope your days are filled with happiness and a smile that never goes away. Jangan lupa berbagi kebahagiaanmu, mungkin itu juga membuat orang lain ikut bahagia 🌟\n\nDi hari spesialmu ini, aku mau bilang kalau aku bersyukur pernah mengenal kamu. Aku juga sangat senang pernah dekat denganmu. Semoga ke depannya aku tetap bisa lihat kamu bahagia, dari dekat atau dari jauh 😄\n\nSemangat terus ya untuk HB Cup-nya, dan juga jadi pengurus. Jangan pernah lelah ya! 💪\n\nSemoga semua hal baik datang padamu, karena kamu pantas mendapatkannya.\n\nI just want to say, until now, I still like you. See you.\n\nSehat-sehat selalu orang favoritku! ✨`;
+
+    const container = document.getElementById('message-text');
+    const clickSound = document.getElementById('click-sound');
+    let index = 0;
+
+    function updateCursor() {
+      container.style.setProperty('--text-length', `${index}ch`);
+    }
+
+    function typeWriter() {
+      if (index < message.length) {
+        container.textContent += message.charAt(index);
+        index++;
+        updateCursor();
+        setTimeout(typeWriter, 30);
+      } else {
+        setTimeout(() => {
+          container.style.setProperty('--text-length', `0ch`);
+          container.style.setProperty('animation', 'none');
+          container.style.removeProperty('content');
+        }, 2000);
+      }
+    }
+
+    window.onload = () => {
+      container.textContent = '';
+      updateCursor();
+      typeWriter();
+
+      const bgMusic = document.getElementById('background-music');
+      bgMusic.volume = 0.3;
+      bgMusic.play().catch(() => {
+        // autoplay mungkin diblokir, bisa tangani jika perlu
+      });
+    };
+
+    document.getElementById('btn-back').onclick = () => {
+      clickSound.currentTime = 0;
+      clickSound.play();
+      setTimeout(() => {
+        window.location.href = 'menu.html';
+      }, 150);
+    };
+  </script>
+</body>
+</html>
